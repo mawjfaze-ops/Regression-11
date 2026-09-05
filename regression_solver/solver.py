@@ -853,3 +853,32 @@ class RegressionSolver:
             print(f"Model: {model_str}")
             print(f"SSE = {self.results['sse']:.4f}")
             print(f"σ²_ML = {self.results['mle_variance']:.4f}")
+
+
+# run_solver.py - Place this in your Regression-11 folder
+import sys
+import os
+
+# Add the current folder to Python path so it can find your code
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+import numpy as np
+
+# Now import your solver directly from the file
+from regression_solver.solver import RegressionSolver
+
+# Create solver instance
+solver = RegressionSolver(verbose=True)
+
+# Your data
+x = np.array([1, 2, 3, 4, 5, 6, 7, 8])
+y = np.array([2.1, 3.8, 5.2, 7.0, 9.1, 10.8, 12.5, 14.2])
+
+# Run linear regression
+results = solver.linear_regression(x, y)
+
+# Check quality
+solver.model_quality(y, results['predictions'])
+
+print("\n✅ Analysis complete!")
+print(f"📐 Equation: y = {results['intercept']:.4f} + {results['slope']:.4f}x")
