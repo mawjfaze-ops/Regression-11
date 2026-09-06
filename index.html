@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Regression Solver — Python Package</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
+                         'Helvetica Neue', Arial, sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            line-height: 1.6;
+            padding: 1.5rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .header h1 span {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header .subtitle {
+            font-size: 1.3rem;
+            color: #a0b4d0;
+            font-weight: 300;
+            margin-top: 0.3rem;
+        }
+
+        .header .badge-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.6rem;
+            margin-top: 1.2rem;
+        }
+
+        .badge {
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #e0e8f0;
+        }
+
+        .badge.purple {
+            background: #667eea;
+            border-color: #667eea;
+        }
+        .badge.green {
+            background: #2ecc71;
+            border-color: #2ecc71;
+        }
+        .badge.orange {
+            background: #f39c12;
+            border-color: #f39c12;
+        }
+        .badge.pink {
+            background: #e74c8b;
+            border-color: #e74c8b;
+        }
+        .badge.cyan {
+            background: #1abc9c;
+            border-color: #1abc9c;
+        }
+
+        .header .repo-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.7rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .header .repo-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* ===== SECTION TITLES ===== */
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin: 2.5rem 0 1.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .section-title .emoji {
+            font-size: 2rem;
+        }
+
+        .section-title .count {
+            font-size: 0.8rem;
+            background: #667eea;
+            color: white;
+            padding: 0.1rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        /* ===== FEATURES GRID ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            color: #1a1a2e;
+        }
+
+        .feature-card p {
+            color: #4a4a6a;
+            font-size: 0.92rem;
+        }
+
+        .feature-card .formula {
+            display: inline-block;
+            background: #f0f2ff;
+            padding: 0.15rem 0.6rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #667eea;
+            margin-top: 0.4rem;
+        }
+
+        /* ===== CODE BLOCK ===== */
+        .code-block {
+            background: #1a1a2e;
+            color: #e0e0ff;
+            padding: 1.2rem 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            margin: 0.8rem 0;
+        }
+
+        .code-block .comment {
+            color: #6a7a9a;
+        }
+        .code-block .keyword {
+            color: #ff79c6;
+        }
+        .code-block .string {
+            color: #f1fa8c;
+        }
+        .code-block .func {
+            color: #50fa7b;
+        }
+        .code-block .number {
+            color: #bd93f9;
+        }
+
+        /* ===== INSTALL STEPS ===== */
+        .steps {
+            counter-reset: step;
+            margin: 1.5rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 1rem;
+            padding: 0.8rem 1.2rem;
+            background: #f8f9ff;
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content code {
+            background: #eef0ff;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e8e8f0;
+            color: #6a6a8a;
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 0.8rem;
+        }
+
+        .footer .social-links a {
+            color: #4a4a6a;
+            font-size: 1rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 700px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            .header .subtitle {
+                font-size: 1rem;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .section-title {
+                font-size: 1.4rem;
+            }
+            .code-block {
+                font-size: 0.75rem;
+                padding: 0.8rem 1rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            body {
+                padding: 0.8rem;
+            }
+            .header h1 {
+                font-size: 1.6rem;
+            }
+            .badge {
+                font-size: 0.65rem;
+                padding: 0.2rem 0.6rem;
+            }
+        }
+
+        /* ===== ANIMATION ===== */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feature-card {
+            animation: fadeUp 0.5s ease forwards;
+        }
+        .feature-card:nth-child(2) {
+            animation-delay: 0.05s; }
+        .feature-card:nth-child(3) {
+            animation-delay: 0.1s; }
+        .feature-card:nth-child(4) {
+            animation-delay: 0.15s; }
+        .feature-card:nth-child(5) {
+            animation-delay: 0.2s; }
+        .feature-card:nth-child(6) {
+            animation-delay: 0.25s; }
+        .feature-card:nth-child(7) {
+            animation-delay: 0.3s; }
+        .feature-card:nth-child(8) {
+            animation-delay: 0.35s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- ===== HEADER ===== -->
+        <header class="header">
+            <h1>📊 <span>Regression</span> Solver</h1>
+            <p class="subtitle">Nonlinear-to-Linear Equation Solver — Python Package</p>
+            <div class="badge-container">
+                <span class="badge purple">🐍 Python 3.8+</span>
+                <span class="badge green">📊 Statistics</span>
+                <span class="badge orange">🤖 ML</span>
+                <span class="badge pink">📈 Regression</span>
+                <span class="badge cyan">🔢 Numerical</span>
+            </div>
+            <a href="https://github.com/mawjfaze-ops/Regression-11" class="repo-link">
+                🐙 View on GitHub
+            </a>
+        </header>
+
+        <!-- ===== DESCRIPTION ===== -->
+        <section>
+            <h2 class="section-title">
+                <span class="emoji">📖</span> About
+            </h2>
+            <div style="background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+                <p style="font-size: 1.05rem; color: #2a2a4a;">
+                    A comprehensive Python package for regression analysis with built-in
+                    <strong>nonlinear-to-linear transformation</strong> capabilities.
+                    Perfect for students, researchers, and data scientists.
+                </p>
+                <p style="margin-top: 0.5rem; color: #4a4a6a;">
+                    <strong>Key idea:</strong> Transform nonlinear equations into linear form,
+                    then solve using ordinary least squares — no complex optimization needed!
+                </p>
+            </div>
+        </section>
+
+        <!-- ===== FEATURES ===== -->
+        <h2 class="section-title">
+            <span class="emoji">🚀</span> Features
+            <span class="count">8</span>
+        </h2>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon">📈</div>
+                <h3>Linear Regression</h3>
+                <p>Ordinary least squares with intercept. Includes matrix solution and step-by-step output.</p>
+                <span class="formula">y = w₀ + w₁x</span>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">🔢</div>
+                <h3>Polynomial Regression</h3>
+                <p>Fit polynomials of any degree. Linear in parameters — no nonlinear optimization.</p>
+                <span class="formula">y = Σ wᵢxⁱ</span>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">📉</div>
+                <h3>Exponential Regression</h3>
+                <p>y = a·e^(bx) linearized via natural log transform.</p>
+                <span class="formula">ln(y) = ln(a) + bx</span>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">⚡</div>
+                <h3>Power Law Regression</h3>
+                <p>y = a·x^b linearized via log-log transform.</p>
+                <span class="formula">ln(y) = ln(a) + b·ln(x)</span>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">🔄</div>
+                <h3>Reciprocal Regression</h3>
+                <p>Multiple forms: y = a + b/x, 1/y = a + bx, and more.</p>
+                <span class="formula">Y = A + B·X</span>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">🧩</div>
+                <h3>Basis Functions</h3>
+                <p>Custom φ(x) basis functions for flexible fitting.</p>
+                <span class="formula">y = Σ wᵢ·φᵢ(x)</span>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">🎯</div>
+                <h3>MAP Estimation</h3>
+                <p>Ridge regression with Gaussian prior. Tunable regularization.</p>
+                <span class="formula">w = (XᵀX + λI)⁻¹Xᵀy</span>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">📊</div>
+                <h3>Model Quality Metrics</h3>
+                <p>SSE, MSE, RMSE, R², and residual analysis.</p>
+                <span class="formula">R² = 1 − SSE/SST</span>
+            </div>
+        </div>
+
+        <!-- ===== INSTALLATION ===== -->
+        <h2 class="section-title">
+            <span class="emoji">📦</span> Installation
+        </h2>
+
+        <div style="background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+            <div class="steps">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Clone the repository</strong>
+                        <div class="code-block">
+                            git clone https://github.com/mawjfaze-ops/Regression-11.git
+                            cd Regression-11
+                        </div>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <strong>Install in development mode</strong>
+                        <div class="code-block">
+                            pip install -e .
+                        </div>
+                        <p style="margin-top: 0.3rem; font-size: 0.85rem; color: #6a6a8a;">
+                            Or use: <code>python -m pip install -e .</code> if pip isn't in your PATH
+                        </p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>Verify installation</strong>
+                        <div class="code-block">
+                            python -c <span class="string">"from regression_solver import RegressionSolver; print('✅ Ready!')"</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== USAGE EXAMPLE ===== -->
+        <h2 class="section-title">
+            <span class="emoji">💻</span> Quick Start
+        </h2>
+
+        <div style="background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+            <p style="margin-bottom: 0.8rem; font-weight: 600;">Run this example in your Python script:</p>
+            <div class="code-block">
+                <span class="keyword">import</span> numpy <span class="keyword">as</span> np
+                <span class="keyword">from</span> regression_solver <span class="keyword">import</span> <span class="func">RegressionSolver</span>
+
+                <span class="comment"># Create solver instance</span>
+                solver = <span class="func">RegressionSolver</span>(verbose=<span class="keyword">True</span>)
+
+                <span class="comment"># Your data</span>
+                x = np.array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>])
+                y = np.array([<span class="number">2.1</span>, <span class="number">3.8</span>, <span class="number">5.2</span>, <span class="number">7.0</span>, <span class="number">9.1</span>, <span class="number">10.8</span>, <span class="number">12.5</span>, <span class="number">14.2</span>])
+
+                <span class="comment"># Run linear regression</span>
+                results = solver.<span class="func">linear_regression</span>(x, y)
+
+                <span class="comment"># Check quality</span>
+                solver.<span class="func">model_quality</span>(y, results[<span class="string">'predictions'</span>])
+
+                <span class="comment"># Make predictions</span>
+                new_x = np.array([<span class="number">9</span>, <span class="number">10</span>])
+                pred = solver.<span class="func">predict</span>(new_x, <span class="string">'linear'</span>)
+                print(<span class="string">f"Predictions: {pred}"</span>)
+            </div>
+            <p style="margin-top: 0.8rem; font-size: 0.85rem; color: #6a6a8a;">
+                📄 Also try: <code>python examples/example_runner.py</code> for more examples
+            </p>
+        </div>
+
+        <!-- ===== LINEARIZATION TABLE ===== -->
+        <h2 class="section-title">
+            <span class="emoji">📐</span> Linearization Reference
+        </h2>
+
+        <div style="background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.06); overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                <thead>
+                    <tr style="background: #f0f2ff; border-bottom: 2px solid #e0e0e8;">
+                        <th style="padding: 0.6rem 1rem; text-align: left;">Original Model</th>
+                        <th style="padding: 0.6rem 1rem; text-align: left;">Transformation</th>
+                        <th style="padding: 0.6rem 1rem; text-align: left;">Linear Form</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid #f0f0f8;">
+                        <td style="padding: 0.6rem 1rem; font-family: 'Courier New', monospace;">y = a·e^(bx)</td>
+                        <td style="padding: 0.6rem 1rem;">ln(y)</td>
+                        <td style="padding: 0.6rem 1rem; font-family: 'Courier New', monospace;">ln(y) = ln(a) + bx</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f0f0f8;">
+                        <td style="padding: 0.6rem 1rem; font-family: 'Courier New', monospace;">y = a·x^b</td>
+                        <td style="padding: 0.6rem 1rem;">ln(x), ln(y)</td>
+                        <td style="padding: 0.6rem 1rem; font-family: 'Courier New', monospace;">ln(y) = ln(a) + b·ln(x)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f0f0f8;">
+                        <td style="padding: 0.6rem 1rem; font-family: 'Courier New', monospace;">y = a + b/x</td>
+                        <td style="padding: 0.6rem 1rem;">1/x</td>
+                        <td style="padding: 0.6rem 1rem; font-family: 'Courier New', monospace;">y = a + b·(1/x)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f0f0f8;">
+                        <td style="padding: 0.6rem 1rem; font-family: 'Courier New', monospace;">1/y = a + bx</td>
+                        <td style="padding: 0.6rem 1rem;">1/y</td>
+                        <td style="padding: 0.6rem 1rem; font-family: 'Courier New', monospace;">1/y = a + bx</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.6rem 1rem; font-family: 'Courier New', monospace;">y = ax/(b + x)</td>
+                        <td style="padding: 0.6rem 1rem;">1/y, 1/x</td>
+                        <td style="padding: 0.6rem 1rem; font-family: 'Courier New', monospace;">1/y = (b/a)·(1/x) + 1/a</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="footer">
+            <p>
+                Built with ❤️ by <a href="https://github.com/mawjfaze-ops">mawjfaze-ops</a>
+                &nbsp;·&nbsp; MIT License
+            </p>
+            <div class="social-links">
+                <a href="https://github.com/mawjfaze-ops/Regression-11">🐙 GitHub Repository</a>
+                <a href="https://github.com/mawjfaze-ops/Regression-11/issues">🐛 Report Issue</a>
+            </div>
+            <p style="margin-top: 0.8rem; font-size: 0.8rem; color: #8a8aaa;">
+                Last updated: <span id="lastUpdated">2026-09-06</span>
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        // Auto-update date
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const dateSpan = document.getElementById('lastUpdated');
+            if (dateSpan) {
+                dateSpan.textContent = now.toISOString().split('T')[0];
+            }
+            console.log('📊 Regression Solver — Project page loaded successfully!');
+        });
+    </script>
+</body>
+</html>
